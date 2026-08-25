@@ -1,0 +1,31 @@
+# Gramática inicial da DrawLang
+
+programa := "INICIO" comandos "FIM" ;
+
+comandos := comando* ;
+
+comando := mover
+         | virar
+         | caneta
+         | levantar
+         | baixar
+         | ir
+         | quadrado
+         | circulo
+         | triangulo
+         | repetir ;
+
+mover := "MOVER" numero ;
+virar := "VIRAR" numero ;
+caneta := "CANETA" cor ;
+levantar := "LEVANTAR" ;
+baixar := "BAIXAR" ;
+ir := "IR" numero numero ;
+quadrado := "QUADRADO" numero ;
+circulo := "CIRCULO" numero ;
+triangulo := "TRIANGULO" numero ;
+repetir := "REPETIR" inteiro comandos "FIM" ;
+
+cor := "vermelho" | "azul" | "verde" | "amarelo" | "preto" | "branco" ;
+numero := NUMERO_INTEIRO | NUMERO_DECIMAL ;
+inteiro := NUMERO_INTEIRO ;
