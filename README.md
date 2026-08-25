@@ -2,32 +2,23 @@
 
 A DrawLang é uma linguagem simples para criar desenhos usando comandos de texto.
 
-O usuário escreve os comandos em um arquivo `.drw`. O programa lê esses comandos e faz o desenho.
+O projeto está sendo desenvolvido por etapas na disciplina de Compiladores e Linguagens Formais.
 
-Exemplo:
+## Estrutura
 
-```text
-INICIO
-CANETA azul
-REPETIR 4
-MOVER 100
-VIRAR 90
-FIM
-FIM
-```
+- `docs/` - documentação
+- `especificacao/` - definições da linguagem
+- `exemplos/` - exemplos da DrawLang
+- `src/` - código do projeto
+- `tests/` - testes
 
-O exemplo acima deve formar um quadrado azul.
+## Expressões regulares
 
-## Estrutura do projeto
+Neste módulo foi feito um analisador simples de expressões regulares.
 
-- `docs/` - documentação da linguagem
-- `especificacao/` - alfabeto e classes léxicas
-- `exemplos/` - exemplos de programas DrawLang
-- `src/` - código do projeto, que será feito nos próximos módulos
+Ele aceita concatenação, `|`, `*`, `+`, `?` e parênteses.
 
-## Teste
-
-Para verificar a estrutura atual do projeto:
+Para testar:
 
 ```bash
 make test
