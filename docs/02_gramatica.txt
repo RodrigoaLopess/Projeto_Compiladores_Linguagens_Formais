@@ -13,19 +13,31 @@ comando := mover
          | quadrado
          | circulo
          | triangulo
-         | repetir ;
+         | repetir
+         | quando ;
 
-mover := "MOVER" numero ;
-virar := "VIRAR" numero ;
+mover := "MOVER" valor ;
+virar := "VIRAR" valor ;
 caneta := "CANETA" cor ;
 levantar := "LEVANTAR" ;
 baixar := "BAIXAR" ;
-ir := "IR" numero numero ;
-quadrado := "QUADRADO" numero ;
-circulo := "CIRCULO" numero ;
-triangulo := "TRIANGULO" numero ;
+ir := "IR" valor valor ;
+quadrado := "QUADRADO" valor ;
+circulo := "CIRCULO" valor ;
+triangulo := "TRIANGULO" valor ;
+
 repetir := "REPETIR" inteiro comandos "FIM" ;
+
+quando := "QUANDO" "LINHA" "CASA" regex "ENTAO" comandos "FIM" ;
+
+valor := numero | captura ;
+captura := "$" NUMERO_INTEIRO ;
+
+regex := "/" expressao_regular "/" ;
 
 cor := "vermelho" | "azul" | "verde" | "amarelo" | "preto" | "branco" ;
 numero := NUMERO_INTEIRO | NUMERO_DECIMAL ;
 inteiro := NUMERO_INTEIRO ;
+
+# A expressão regular é lida pelo parser específico de regex.
+# Grupos entre parênteses também definem capturas numeradas.
