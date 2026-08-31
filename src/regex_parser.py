@@ -1,13 +1,25 @@
 class ErroRegex(Exception):
-    def __init__(self, posicao, mensagem):
+    def __init__(self, posicao, mensagem, expressao=None):
         self.posicao = posicao
         self.mensagem = mensagem
+        self.expressao = expressao
+        super().__init__(mensagem)
+
+    def __str__(self):
+        if self.expressao is None:
+            return f"{self.mensagem} na posicao {self.posicao}"
+
+        marcador = " " * self.posicao + "^"
+        return f"{self.expressao}\n{marcador}\n{self.mensagem}"
 
 
 class ParserRegex:
     def __init__(self, texto):
         self.texto = texto
         self.pos = 0
+
+    def erro(self, mensagem):
+        raise ErroRegex(self.pos, mensagem, self.texto)
 
     def atual(self):
         if self.pos >= len(self.texto):
@@ -16,12 +28,12 @@ class ParserRegex:
 
     def ler(self):
         if self.texto == "":
-            raise ErroRegex(0, "expressao vazia")
+            self.erro("expressao vazia")
 
         arvore = self.alternancia()
 
         if self.pos != len(self.texto):
-            raise ErroRegex(self.pos, "simbolo inesperado")
+            self.erro("simbolo inesperado")
 
         return arvore
 
@@ -42,7 +54,7 @@ class ParserRegex:
             partes.append(self.repeticao())
 
         if len(partes) == 0:
-            raise ErroRegex(self.pos, "faltou expressao")
+            self.erro("faltou expressao")
 
         arvore = partes[0]
 
@@ -57,7 +69,13 @@ class ParserRegex:
         while self.atual() in ("*", "+", "?"):
             operador = self.atual()
             self.pos += 1
-            arvore = (operador, arvore)
+
+            if operador == "*":
+                arvore = ("*", arvore)
+            elif operador == "+":
+                arvore = (".", arvore, ("*", arvore))
+            else:
+                arvore = ("|", arvore, ("vazio",))
 
         return arvore
 
@@ -65,17 +83,17 @@ class ParserRegex:
         caractere = self.atual()
 
         if caractere is None:
-            raise ErroRegex(self.pos, "faltou expressao")
+            self.erro("faltou expressao")
 
         if caractere in "*+?":
-            raise ErroRegex(self.pos, "operador sem expressao")
+            self.erro("operador sem expressao")
 
         if caractere == "(":
             self.pos += 1
             arvore = self.alternancia()
 
             if self.atual() != ")":
-                raise ErroRegex(self.pos, "faltou fechar parenteses")
+                self.erro("faltou fechar parenteses")
 
             self.pos += 1
             return arvore
