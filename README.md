@@ -23,3 +23,15 @@ Para testar:
 ```bash
 make test
 ```
+
+## AFN
+
+O `src/afn.py` tem o AFN com fecho-ε e simulação passo a passo, seguindo o modelo do professor.
+
+Para ver o exemplo `a*b`:
+
+```bash
+make afn
+```
+
+Mais detalhes em `docs/04_afn.md`.

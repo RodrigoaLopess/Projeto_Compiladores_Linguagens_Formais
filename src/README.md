@@ -3,6 +3,7 @@
 A implementação atual da DrawLang já possui:
 
 - `regex_parser.py`: leitura da expressão regular e construção da árvore;
+- `afn.py`: AFN no modelo do professor, com fecho-ε e simulação passo a passo;
 - `automato.py`: estrutura do autômato alinhada ao modelo AFD fornecido pelo professor;
 - `main.py`: demonstração simples de aceitação e captura.
 
