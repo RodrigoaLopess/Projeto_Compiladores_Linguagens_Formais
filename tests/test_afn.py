@@ -1,5 +1,7 @@
 from src.regex_parser import analisar_regex
-from src.afn import EPSILON, QUALQUER, Afn, construirAfn, exemploProfessor
+from src.afn import (
+    EPSILON, QUALQUER, Afn, construirAfn, exemploProfessor, padroesDoPrograma
+)
 
 
 def testar_exemplo_professor():
@@ -83,6 +85,51 @@ def testar_afn_da_regex():
     assert not afn.aceita("ac")
 
 
+def testar_padrao_drawlang():
+    # padrao do exemplo captura_pontos.drw
+    with open("exemplos/captura_pontos.drw") as arquivo:
+        padroes = padroesDoPrograma(arquivo.read())
+
+    assert padroes == ["([0-9]+),([0-9]+)"]
+
+    afn = construirAfn(analisar_regex(padroes[0]))
+
+    assert afn.aceita("10,20")
+    assert afn.aceita("150,40")
+    assert not afn.aceita("oi")
+    assert not afn.aceita("7,")
+    assert not afn.aceita("12;34")
+
+    simulacao = afn.simular("7,")
+    assert [p.simbolo for p in simulacao.passos] == ["", "7", ","]
+    assert not simulacao.aceita
+
+
+def testar_numero_drawlang():
+    # numero da DrawLang: [0-9]+(\.[0-9]+)?
+    afn = construirAfn(analisar_regex(r"[0-9]+(\.[0-9]+)?"))
+
+    assert afn.aceita("100")
+    assert afn.aceita("2.5")
+    assert not afn.aceita("2.")
+    assert not afn.aceita("2x5")  # \. e ponto, nao coringa
+
+    afn = construirAfn(analisar_regex(r"\d+"))
+    assert afn.aceita("45")
+
+
+def testar_padroes_do_programa():
+    texto = (
+        "INICIO\n"
+        "quando linha casa /[0-9]+/ entao\n"
+        "    MOVER $1;\n"
+        "FIM\n"
+        "FIM\n"
+    )
+
+    assert padroesDoPrograma(texto) == ["[0-9]+"]
+
+
 if __name__ == "__main__":
     testar_exemplo_professor()
     testar_fecho_vazio()
@@ -90,4 +137,7 @@ if __name__ == "__main__":
     testar_rejeita_e_para()
     testar_coringa()
     testar_afn_da_regex()
+    testar_padrao_drawlang()
+    testar_numero_drawlang()
+    testar_padroes_do_programa()
     print("teste afn: ok")

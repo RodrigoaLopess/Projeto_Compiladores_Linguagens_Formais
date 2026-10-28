@@ -98,8 +98,73 @@ class ParserRegex:
             self.pos += 1
             return arvore
 
+        if caractere == "[":
+            return self.classe()
+
+        if caractere == "\\":
+            return self.escape()
+
+        if caractere == ".":
+            self.pos += 1
+            return ("qualquer",)
+
         self.pos += 1
         return ("simbolo", caractere)
+
+    def classe(self):
+        # [0-9] vira alt('0', alt('1', ...)), igual ao D da atividade
+        self.pos += 1
+        simbolos = []
+
+        while self.atual() is not None and self.atual() != "]":
+            inicio = self.atual()
+            self.pos += 1
+
+            if self.atual() == "-" and self.pos + 1 < len(self.texto) \
+                    and self.texto[self.pos + 1] != "]":
+                fim = self.texto[self.pos + 1]
+                self.pos += 2
+
+                if fim < inicio:
+                    self.erro("intervalo invalido")
+
+                for codigo in range(ord(inicio), ord(fim) + 1):
+                    simbolos.append(chr(codigo))
+            else:
+                simbolos.append(inicio)
+
+        if self.atual() != "]":
+            self.erro("faltou fechar colchete")
+
+        if len(simbolos) == 0:
+            self.erro("classe vazia")
+
+        self.pos += 1
+        return alternativas(simbolos)
+
+    def escape(self):
+        # \d = digito; \. \/ \( ... = o proprio simbolo
+        self.pos += 1
+        caractere = self.atual()
+
+        if caractere is None:
+            self.erro("faltou simbolo depois da barra")
+
+        self.pos += 1
+
+        if caractere == "d":
+            return alternativas("0123456789")
+
+        return ("simbolo", caractere)
+
+
+def alternativas(simbolos):
+    arvore = ("simbolo", simbolos[-1])
+
+    for simbolo in reversed(simbolos[:-1]):
+        arvore = ("|", ("simbolo", simbolo), arvore)
+
+    return arvore
 
 
 def analisar_regex(texto):

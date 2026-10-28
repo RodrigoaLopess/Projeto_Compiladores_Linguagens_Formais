@@ -28,7 +28,7 @@ make test
 
 O `src/afn.py` tem o AFN com fecho-ε e simulação passo a passo, seguindo o modelo do professor.
 
-Para ver o exemplo `a*b`:
+Ele lê o padrão de `QUANDO LINHA CASA /.../` do programa e simula cada linha da entrada:
 
 ```bash
 make afn

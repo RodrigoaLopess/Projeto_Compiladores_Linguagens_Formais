@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 
 
-EPSILON = "ε"   # transicao vazia
-QUALQUER = "."  # coringa: casa com qualquer simbolo (menos ε)
+EPSILON = "ε"          # transicao vazia
+QUALQUER = "qualquer"  # coringa (o "." da regex): casa com qualquer simbolo
+# QUALQUER tem mais de uma letra para nao confundir com o "." literal (\.)
 
 
 @dataclass
@@ -107,6 +108,9 @@ class Afn:
 
             for estado in ativos:
                 for t in self.transicoes[estado]:
+                    if t.simbolo == EPSILON:
+                        continue
+
                     casa = t.simbolo == simbolo or t.simbolo == QUALQUER
 
                     # o vetor presente tira os repetidos
@@ -146,9 +150,13 @@ def _fragmento(afn, no):
     if tipo == "simbolo":
         inicio = afn.novoEstado()
         fim = afn.novoEstado()
-        # o "." da regex vira o coringa
-        simbolo = QUALQUER if no[1] == "." else no[1]
-        afn.adicionarTransicao(inicio, simbolo, fim)
+        afn.adicionarTransicao(inicio, no[1], fim)
+        return inicio, fim
+
+    if tipo == "qualquer":
+        inicio = afn.novoEstado()
+        fim = afn.novoEstado()
+        afn.adicionarTransicao(inicio, QUALQUER, fim)
         return inicio, fim
 
     if tipo == "vazio":
@@ -190,10 +198,35 @@ def _fragmento(afn, no):
 def mostrarSimulacao(simulacao):
     for passo in simulacao.passos:
         simbolo = passo.simbolo if passo.simbolo else EPSILON
-        print(f"le {simbolo!r:5} -> ativos {set(passo.ativos) or '{}'}")
+        ativos = "{" + ", ".join(str(e) for e in passo.ativos) + "}"
+        print(f"  le {simbolo!r:5} -> ativos {ativos}")
 
-    print("maior conjunto ativo:", simulacao.maiorConjuntoAtivo)
-    print("ACEITA" if simulacao.aceita else "REJEITA")
+    print("  maior conjunto ativo:", simulacao.maiorConjuntoAtivo)
+    print("  ACEITA" if simulacao.aceita else "  REJEITA")
+
+
+# ---------- uso na DrawLang ----------
+
+def padroesDoPrograma(texto):
+    """
+    Pega os padroes de QUANDO LINHA CASA /.../ ENTAO do programa.
+    Bem simples: procura o CASA e le o que esta entre as barras.
+    """
+    padroes = []
+
+    for linha in texto.splitlines():
+        # comandos nao diferenciam maiusculas e minusculas
+        posicao = linha.upper().find("CASA")
+
+        if posicao == -1 or "LINHA" not in linha[:posicao].upper():
+            continue
+
+        resto = linha[posicao + 4:].strip()
+
+        if resto.startswith("/") and "/" in resto[1:]:
+            padroes.append(resto[1:resto.rindex("/")])
+
+    return padroes
 
 
 def exemploProfessor():
@@ -212,11 +245,38 @@ def exemploProfessor():
     return afn
 
 
+def main(programa, entrada):
+    from src.regex_parser import analisar_regex
+
+    with open(programa) as arquivo:
+        padroes = padroesDoPrograma(arquivo.read())
+
+    with open(entrada) as arquivo:
+        linhas = arquivo.read().splitlines()
+
+    for padrao in padroes:
+        afn = construirAfn(analisar_regex(padrao))
+
+        print(f"Padrao: /{padrao}/")
+        print("estados:", afn.quantidadeDeEstados())
+        print("transicoes:", afn.quantidadeDeTransicoes())
+        print("transicoes vazias:", afn.quantidadeDeTransicoesVazias())
+
+        for linha in linhas:
+            print()
+            print(f"Linha: {linha!r}")
+            mostrarSimulacao(afn.simular(linha))
+
+
 if __name__ == "__main__":
-    afn = exemploProfessor()
-    print("AFN a*b")
-    print("estados:", afn.quantidadeDeEstados())
-    print("transicoes:", afn.quantidadeDeTransicoes())
-    print("transicoes vazias:", afn.quantidadeDeTransicoesVazias())
-    print()
-    mostrarSimulacao(afn.simular("ab"))
+    import sys
+
+    programa = "exemplos/captura_pontos.drw"
+    entrada = "exemplos/entrada_pontos_01.txt"
+
+    if len(sys.argv) > 1:
+        programa = sys.argv[1]
+    if len(sys.argv) > 2:
+        entrada = sys.argv[2]
+
+    main(programa, entrada)

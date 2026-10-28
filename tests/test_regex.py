@@ -65,8 +65,28 @@ def testar_erros():
         assert str(erro) == "a(b\n   ^\nfaltou fechar parenteses"
 
 
+def testar_classes_drawlang():
+    assert analisar_regex("[0-2]") == (
+        "|",
+        ("simbolo", "0"),
+        ("|", ("simbolo", "1"), ("simbolo", "2")),
+    )
+
+    assert analisar_regex(r"\d") == analisar_regex("[0-9]")
+    assert analisar_regex(r"\.") == ("simbolo", ".")
+    assert analisar_regex(".") == ("qualquer",)
+
+    try:
+        analisar_regex("[0-9")
+        assert False
+    except ErroRegex as erro:
+        assert erro.posicao == 4
+        assert erro.mensagem == "faltou fechar colchete"
+
+
 if __name__ == "__main__":
     testar_validas()
     testar_reducoes()
     testar_erros()
+    testar_classes_drawlang()
     print("testes ok")
