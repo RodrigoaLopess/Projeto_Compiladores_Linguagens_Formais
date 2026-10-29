@@ -84,9 +84,26 @@ def testar_classes_drawlang():
         assert erro.mensagem == "faltou fechar colchete"
 
 
+def testar_capturas():
+    # sem a opcao, ( ) e so agrupamento
+    assert analisar_regex("(a)") == ("simbolo", "a")
+
+    assert analisar_regex("(a),(b)", capturas=True) == (
+        ".",
+        (".", ("captura", 1, ("simbolo", "a")), ("simbolo", ",")),
+        ("captura", 2, ("simbolo", "b")),
+    )
+
+    # numerados pela ordem do (
+    arvore = analisar_regex("((a)b)", capturas=True)
+    assert arvore[:2] == ("captura", 1)
+    assert arvore[2][1] == ("captura", 2, ("simbolo", "a"))
+
+
 if __name__ == "__main__":
     testar_validas()
     testar_reducoes()
     testar_erros()
     testar_classes_drawlang()
+    testar_capturas()
     print("testes ok")

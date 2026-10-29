@@ -153,6 +153,10 @@ def _fragmento(afn, no):
         afn.adicionarTransicao(inicio, no[1], fim)
         return inicio, fim
 
+    if tipo == "captura":
+        # o AFN so diz se casa; a captura fica com o automato.py
+        return _fragmento(afn, no[2])
+
     if tipo == "qualquer":
         inicio = afn.novoEstado()
         fim = afn.novoEstado()

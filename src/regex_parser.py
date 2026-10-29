@@ -14,9 +14,12 @@ class ErroRegex(Exception):
 
 
 class ParserRegex:
-    def __init__(self, texto):
+    def __init__(self, texto, capturas=False):
         self.texto = texto
         self.pos = 0
+        # com capturas=True cada ( ) vira um grupo numerado ($1, $2, ...)
+        self.capturas = capturas
+        self.grupos = 0
 
     def erro(self, mensagem):
         raise ErroRegex(self.pos, mensagem, self.texto)
@@ -90,12 +93,21 @@ class ParserRegex:
 
         if caractere == "(":
             self.pos += 1
+
+            # o numero do grupo e dado na ordem em que o ( aparece
+            self.grupos += 1
+            grupo = self.grupos
+
             arvore = self.alternancia()
 
             if self.atual() != ")":
                 self.erro("faltou fechar parenteses")
 
             self.pos += 1
+
+            if self.capturas:
+                return ("captura", grupo, arvore)
+
             return arvore
 
         if caractere == "[":
@@ -167,5 +179,5 @@ def alternativas(simbolos):
     return arvore
 
 
-def analisar_regex(texto):
-    return ParserRegex(texto).ler()
+def analisar_regex(texto, capturas=False):
+    return ParserRegex(texto, capturas).ler()

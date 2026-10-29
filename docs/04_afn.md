@@ -108,6 +108,13 @@ O exemplo do material continua nos testes (`tests/test_afn.py`):
 
 Simulando `ab`: `{0, 1}` → lê `a` → `{0, 1}` → lê `b` → `{2}` → aceita.
 
-## O que ainda falta
+## Capturas
 
-O AFN só diz se a linha casa ou não. Os valores de `$1` e `$2` (capturas) ainda não saem dele; isso fica para a próxima etapa.
+O AFN só diz se a linha casa ou não. Os valores de `$1` e `$2` saem do `automato.py`, usando a árvore com grupos:
+
+```python
+arvore = analisar_regex("([0-9]+),([0-9]+)", capturas=True)
+construirAutomato(arvore).executar("150,40")  # {1: '150', 2: '40'}
+```
+
+Com `capturas=True` cada `( )` vira `("captura", n, ...)`, numerado pela ordem do `(`. O AFN aceita essa árvore também, só ignora a captura.
