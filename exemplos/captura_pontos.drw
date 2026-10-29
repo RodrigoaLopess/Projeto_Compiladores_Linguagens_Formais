@@ -1,0 +1,5 @@
+INICIO
+QUANDO LINHA CASA /([0-9]+),([0-9]+)/ ENTAO
+    IR $1 $2;
+FIM
+FIM
