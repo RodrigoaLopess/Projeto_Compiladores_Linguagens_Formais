@@ -23,15 +23,3 @@ Para testar:
 ```bash
 make test
 ```
-
-## AFN
-
-O `src/afn.py` tem o AFN com fecho-ε e simulação passo a passo, seguindo o modelo do professor.
-
-Ele lê o padrão de `QUANDO LINHA CASA /.../` do programa e simula cada linha da entrada:
-
-```bash
-make afn
-```
-
-Mais detalhes em `docs/04_afn.md`.

@@ -3,7 +3,7 @@ from src.automato import construirAutomato
 
 
 def testar_automato():
-    ast = analisar_regex(r"(\d+),(\d+)", capturas=True)
+    ast = analisar_regex(r"(\\d+),(\\d+)")
     automato = construirAutomato(ast)
 
     assert automato.aceita("12,34")
