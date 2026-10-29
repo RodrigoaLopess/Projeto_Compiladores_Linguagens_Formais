@@ -12,9 +12,11 @@ class ErroRegex(Exception):
 
 
 class ParserRegex:
-    def __init__(self, texto):
+    def __init__(self, texto, capturas=False):
         self.texto = texto
         self.pos = 0
+        self.capturas = capturas
+        self.numeroCaptura = 0
 
     def erro(self, mensagem):
         raise ErroRegex(self.pos, mensagem, self.texto)
@@ -78,11 +80,15 @@ class ParserRegex:
             self.erro("operador sem expressao")
         if caractere == "(":
             self.pos += 1
+            numero = None
+            if self.capturas:
+                self.numeroCaptura += 1
+                numero = self.numeroCaptura
             arvore = self.alternancia()
             if self.atual() != ")":
                 self.erro("faltou fechar parenteses")
             self.pos += 1
-            return arvore
+            return ("captura", numero, arvore) if self.capturas else arvore
         if caractere == "[":
             if self.texto[self.pos:self.pos + 5] != "[0-9]":
                 self.erro("classe de caracteres invalida")
@@ -103,5 +109,5 @@ class ParserRegex:
         return ("simbolo", caractere)
 
 
-def analisar_regex(texto):
-    return ParserRegex(texto).ler()
+def analisar_regex(texto, capturas=False):
+    return ParserRegex(texto, capturas=capturas).ler()

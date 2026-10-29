@@ -81,6 +81,8 @@ def construirAfn(arvore):
 
     def fragmento(no):
         tipo = no[0]
+        if tipo == "captura":
+            return fragmento(no[2])
         if tipo in ("simbolo", "qualquer", "vazio"):
             inicio, fim = afn.novoEstado(), afn.novoEstado()
             simbolo = no[1] if tipo == "simbolo" else QUALQUER if tipo == "qualquer" else EPSILON

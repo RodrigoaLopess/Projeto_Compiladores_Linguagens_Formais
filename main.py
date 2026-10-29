@@ -3,10 +3,10 @@ from src.automato import construirAutomato
 
 
 def main():
-    regex = r"(\\d+),(\\d+)"
+    regex = r"(\d+),(\d+)"
     entrada = "12,34"
 
-    arvore = analisar_regex(regex)
+    arvore = analisar_regex(regex, capturas=True)
     automato = construirAutomato(arvore)
 
     print("Regex:", regex)
