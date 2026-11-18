@@ -44,7 +44,7 @@ def testar_operadores():
         ('a+', '', False), ('a+', 'aaa', True),
         ('ab?', 'a', True), ('ab?', 'abb', False),
         ('a(b|c)', 'ac', True), ('a(b|c)', 'ad', False),
-        (r'a\\.b', 'a.b', True), (r'a\\.b', 'acb', False),
+        (r'a\.b', 'a.b', True), (r'a\.b', 'acb', False),
         ('[0-9]+', '123', True), ('[0-9]+', 'a', False),
         ('a.*b', 'axyb', True), ('a.*b', 'axy', False),
     ]
